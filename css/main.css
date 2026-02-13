@@ -1,5 +1,96 @@
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: sans-serif;
 }
+
+.notes{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+    padding: 10px;
+}
+.title{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    font-size: 50px;
+}
+.add-form{
+    width: 50%;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    border: #676767 solid 1px;
+    border-radius: 15px;
+    box-shadow: 0px 5px 29px 2px rgba(0, 0, 0, 0.2);
+}
+.add-form h3{
+    font-size: 24px;
+}
+.tasks{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.add-form-input  {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #c6c6c6;
+    border-radius: 5px;
+    box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.2);
+}
+.tasks{
+    width: 100%;
+}
+.tasks-element{
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+}
+
+.remove-button {
+    width: 30%;
+    padding: 8px 15px;
+    background: #ffffff;
+    color: #700a0a;
+    border: #700a0a solid 1px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.2);
+}
+
+.remove-button:hover {
+    color: #cccccc;
+    background: #700a0a;
+}
+.task-button{
+    display: flex;
+    justify-content: flex-end;
+}
+.add-task-button{
+    width: 40%;
+    padding: 8px 15px;
+    background: #ffffff;
+    color: #467c43;
+    border: #5a8a57 solid 1px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.2);
+}
+.add-note-button{
+    width: 100%;
+    padding: 8px 15px;
+    background: #ffffff;
+    color: #467c43;
+    border: #5a8a57 solid 1px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.2);
+}
+
+
