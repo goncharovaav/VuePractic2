@@ -17,16 +17,66 @@ Vue.component('notes', {
             </div>
             <button @click="addNote" class="add-note-button">Добавить заметку</button>
         </form>
+        
+        <div class="columns">
+            <div class="column">
+                <h2 class="column-title">Новые</h2>
+                <div v-for="note in newNotes" :key="note.id" class="note-new">
+                    <h3 class="note-title">{{note.title}}</h3>
+                    <div v-for="(task, index) in note.tasks" :key="index" class="note-task">
+                    <span>{{task}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <h2 class="column-title">Незавершенные</h2>
+                <div v-for="note in progressNotes" :key="note.id" class="note-progress">
+                    <h3 class="note-title">{{note.title}}</h3>
+                    <div v-for="(task, index) in note.tasks" :key="index" class="note-task">
+                    <span>{{task}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <h2 class="column-title">Выполнено</h2>
+                <div v-for="note in completedNotes" :key="note.id" class="note-completed">
+                    <h3 class="note-title">{{note.title}}</h3>
+                    <div v-for="(task, index) in note.tasks" :key="index" class="note-task">
+                    <span>{{task}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     `,
     data() {
         return {
             title: '',
-            tasks: ['', '', '']
+            tasks: ['', '', ''],
+            notes: [],
+        }
+    },
+    computed: {
+        newNotes() {
+            return this.notes.filter(n => n.status === 'new');
+        },
+        progressNotes() {
+            return this.notes.filter(n => n.status === 'progress');
+        },
+        completedNotes() {
+            return this.notes.filter(n => n.status === 'completed');
         }
     },
     methods: {
         addNote() {
+            const note = {
+                id: Date.now(),
+                title: this.title,
+                tasks: this.tasks,
+                status: 'new',
+            };
+            this.notes.push(note);
+
             this.title = '';
             this.tasks = ['', '', ''];
         },
