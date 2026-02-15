@@ -142,6 +142,8 @@ Vue.component('notes', {
             this.title = '';
             this.tasks = ['', '', ''];
 
+            this.checkNotes();
+
             this.saveData();
         },
         addTask() {
@@ -192,6 +194,44 @@ Vue.component('notes', {
                 this.disableFirstColumn = false;
             }
 
+            this.checkNotes();
+
+            this.saveData();
+        },
+        checkNotes() {
+            let inProgressCount = 0;
+            for (let i = 0; i < this.notes.length; i++) {
+                if (this.notes[i].status === 'progress') {
+                    inProgressCount++;
+                }
+            }
+
+            let freePlaces = 5 - inProgressCount;
+
+            for (let i = 0; i < this.notes.length; i++) {
+                let note = this.notes[i];
+
+                if (freePlaces > 0 && note.status === 'new') {
+                    let done = 0;
+                    for (let j = 0; j < note.tasks.length; j++) {
+                        if (note.tasks[j].completed) {
+                            done++;
+                        }
+                    }
+
+                    let percent = done / note.tasks.length;
+
+                    if (percent >= 0.5) {
+                        note.status = 'progress';
+                        freePlaces--;
+                    }
+                }
+            }
+
+            if (freePlaces > 0) {
+                this.disableFirstColumn = false;
+            }
+
             this.saveData();
         },
         saveData() {
@@ -203,6 +243,8 @@ Vue.component('notes', {
         if (saved) {
             this.notes = JSON.parse(saved);
         }
+
+        this.checkNotes();
     }
 })
 
