@@ -21,7 +21,10 @@ Vue.component('notes', {
                 <p v-if="tasks.length >= 5" class="max-tasks-message">Достигнут максимум задач</p>
                 <p v-if="tasks.length <= 3" class="min-tasks-message">Минимум задач</p>
             </div>
-            <button type="submit" class="add-note-button">Добавить заметку</button>
+            <button type="submit" :disabled="newNotes.length >= 3" class="add-note-button">
+                {{ newNotes.length >= 3 ? 'Первый столбец заполнен' : 'Добавить заметку' }}
+            </button>
+            <p v-if="newNotes.length >= 3" class="error-message">В первом столбце уже 3 заметки.</p>
         </form>
         
         <div class="columns">
@@ -107,6 +110,11 @@ Vue.component('notes', {
                 return;
             }
 
+            if (this.newNotes.length >= 3) {
+                alert('Первый столбец заполнен!');
+                return;
+            }
+
             let newNote = {
                 id: Date.now(),
                 title: this.title,
@@ -152,8 +160,19 @@ Vue.component('notes', {
             let total = note.tasks.length;
             let percent = done / total;
 
+            let inProgressCount = 0;
+            for (let i = 0; i < this.notes.length; i++) {
+                if (this.notes[i].status === 'progress') {
+                    inProgressCount++;
+                }
+            }
+
             if (note.status === 'new' && percent > 0.5) {
-                note.status = 'progress';
+                if (inProgressCount < 5) {
+                    note.status = 'progress';
+                } else {
+                    alert('Второй столбец заполнен!');
+                }
             }
 
             if (percent === 1) {
