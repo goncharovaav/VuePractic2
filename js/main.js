@@ -2,48 +2,63 @@ Vue.component('notes', {
     template: `
     <div class="notes">
         <h1 class="title">Заметки</h1>
-        <form class="add-form">
+        <form class="add-form" @submit.prevent="addNote">
             <h3>Добавить заметку</h3>
-            <input type="text" v-model="title" required placeholder="Название заметки" class="add-form-input">
+            <input type="text" v-model="title" placeholder="Название заметки" class="add-form-input">
             <div class="tasks">
-            <h3>Задачи:</h3>
-            <div v-for="(task, index) in tasks" :key="index" class="tasks-element">
-                <input v-model="tasks[index]" placeholder="Задача" class="add-form-input">
-                <button @click="removeTask(index)" class="remove-button">Удалить</button>
+                <h3>Задачи:</h3>
+                <div v-for="(task, index) in tasks" :key="index" class="tasks-element">
+                    <input v-model="tasks[index]" placeholder="Задача" class="add-form-input">
+                    <button type="button" @click="removeTask(index)" :disabled="tasks.length <= 3" class="remove-button">
+                        {{ tasks.length <= 3 ? 'Минимум' : 'Удалить' }}
+                    </button>
+                </div>
+                <div class="task-button">
+                     <button type="button" @click="addTask" :disabled="tasks.length >= 5" class="add-task-button">
+                        {{ tasks.length >= 5 ? 'Максимум задач' : 'Добавить задачу' }}
+                     </button>
+                </div>
+                <p v-if="tasks.length >= 5" class="max-tasks-message">Достигнут максимум задач</p>
+                <p v-if="tasks.length <= 3" class="min-tasks-message">Минимум задач</p>
             </div>
-            <div class="task-button">
-                 <button @click="addTask" class="add-task-button">Добавить задачу</button>
-            </div>
-            </div>
-            <button @click="addNote" class="add-note-button">Добавить заметку</button>
+            <button type="submit" class="add-note-button">Добавить заметку</button>
         </form>
         
         <div class="columns">
             <div class="column">
                 <h2 class="column-title">Новые</h2>
-                <div v-for="note in newNotes" :key="note.id" class="note-new">
+                <div v-for="note in newNotes" :key="note.id" class="note-tasks">
                     <h3 class="note-title">{{note.title}}</h3>
-                    <div v-for="(task, index) in note.tasks" :key="index" class="note-task">
-                    <span>{{task}}</span>
-                    </div>
+                    <ul class="note-list">
+                        <li v-for="(task, index) in note.tasks" :key="index" class="note-task">
+                            <input type="checkbox" v-model="task.completed" class="task-checkbox">
+                            <span :class="{ 'task-completed': task.completed }">{{task.text}}</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
             <div class="column">
                 <h2 class="column-title">Незавершенные</h2>
-                <div v-for="note in progressNotes" :key="note.id" class="note-progress">
+                <div v-for="note in progressNotes" :key="note.id" class="note-tasks">
                     <h3 class="note-title">{{note.title}}</h3>
-                    <div v-for="(task, index) in note.tasks" :key="index" class="note-task">
-                    <span>{{task}}</span>
-                    </div>
+                    <ul class="note-list">
+                        <li v-for="(task, index) in note.tasks" :key="index" class="note-task">
+                            <input type="checkbox" v-model="task.completed" class="task-checkbox">
+                            <span :class="{ 'task-completed': task.completed }">{{task.text}}</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
             <div class="column">
                 <h2 class="column-title">Выполнено</h2>
-                <div v-for="note in completedNotes" :key="note.id" class="note-completed">
+                <div v-for="note in completedNotes" :key="note.id" class="note-tasks">
                     <h3 class="note-title">{{note.title}}</h3>
-                    <div v-for="(task, index) in note.tasks" :key="index" class="note-task">
-                    <span>{{task}}</span>
-                    </div>
+                    <ul class="note-list">
+                        <li v-for="(task, index) in note.tasks" :key="index" class="note-task">
+                            <input type="checkbox" v-model="task.completed" disabled class="task-checkbox">
+                            <span class="task-completed">{{task.text}}</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -53,15 +68,15 @@ Vue.component('notes', {
         return {
             title: '',
             tasks: ['', '', ''],
-            notes: [],
+            notes: []
         }
     },
     computed: {
         newNotes() {
-            return this.notes.filter(n => n.status === 'new');
+            return this.notes.filter(n => n.status === 'new').slice(0, 3);
         },
         progressNotes() {
-            return this.notes.filter(n => n.status === 'progress');
+            return this.notes.filter(n => n.status === 'progress').slice(0, 5);
         },
         completedNotes() {
             return this.notes.filter(n => n.status === 'completed');
@@ -69,13 +84,43 @@ Vue.component('notes', {
     },
     methods: {
         addNote() {
-            const note = {
+            if (!this.title) {
+                alert('Введите название заметки!');
+                return;
+            }
+
+            for (let i = 0; i < this.tasks.length; i++) {
+                if (!this.tasks[i]) {
+                    alert('Заполните все задачи!');
+                    return;
+                }
+            }
+
+            if (this.tasks.length < 3) {
+                alert('Минимум 3 задачи!');
+                return;
+            }
+
+            if (this.tasks.length > 5) {
+                alert('Максимум 5 задач!');
+                return;
+            }
+
+            let newNote = {
                 id: Date.now(),
                 title: this.title,
-                tasks: this.tasks,
-                status: 'new',
+                tasks: [],
+                status: 'new'
             };
-            this.notes.push(note);
+
+            for (let i = 0; i < this.tasks.length; i++) {
+                newNote.tasks.push({
+                    text: this.tasks[i],
+                    completed: false
+                });
+            }
+
+            this.notes.push(newNote);
 
             this.title = '';
             this.tasks = ['', '', ''];
@@ -83,15 +128,20 @@ Vue.component('notes', {
         addTask() {
             if (this.tasks.length < 5) {
                 this.tasks.push('');
+            } else {
+                alert('Максимум 5 задач!');
             }
         },
         removeTask(index) {
-            if (this.tasks.length > 3){
+            if (this.tasks.length > 3) {
                 this.tasks.splice(index, 1);
+            } else {
+                alert('Минимум 3 задачи!');
             }
         }
     }
 })
+
 let app = new Vue({
     el: '#app',
 })
