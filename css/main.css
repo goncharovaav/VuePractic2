@@ -149,6 +149,13 @@
     opacity: 0.7;
     color: #888;
 }
+.completion-date {
+    margin-top: 10px;
+    font-size: 12px;
+    color: gray;
+    text-align: right;
+    font-style: italic;
+}
 .max-tasks-message {
     color: #ff8800;
     font-size: 14px;

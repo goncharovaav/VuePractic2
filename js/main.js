@@ -31,7 +31,7 @@ Vue.component('notes', {
                     <h3 class="note-title">{{note.title}}</h3>
                     <ul class="note-list">
                         <li v-for="(task, index) in note.tasks" :key="index" class="note-task">
-                            <input type="checkbox" v-model="task.completed" class="task-checkbox">
+                            <input type="checkbox" v-model="task.completed" @change="checkProgress(note)" class="task-checkbox">
                             <span :class="{ 'task-completed': task.completed }">{{task.text}}</span>
                         </li>
                     </ul>
@@ -43,7 +43,7 @@ Vue.component('notes', {
                     <h3 class="note-title">{{note.title}}</h3>
                     <ul class="note-list">
                         <li v-for="(task, index) in note.tasks" :key="index" class="note-task">
-                            <input type="checkbox" v-model="task.completed" class="task-checkbox">
+                            <input type="checkbox" v-model="task.completed" @change="checkProgress(note)" class="task-checkbox">
                             <span :class="{ 'task-completed': task.completed }">{{task.text}}</span>
                         </li>
                     </ul>
@@ -59,6 +59,7 @@ Vue.component('notes', {
                             <span class="task-completed">{{task.text}}</span>
                         </li>
                     </ul>
+                    <p v-if="note.completedDate" class="completion-date">{{note.completedDate}}</p>
                 </div>
             </div>
         </div>
@@ -110,7 +111,8 @@ Vue.component('notes', {
                 id: Date.now(),
                 title: this.title,
                 tasks: [],
-                status: 'new'
+                status: 'new',
+                completedDate: null
             };
 
             for (let i = 0; i < this.tasks.length; i++) {
@@ -137,6 +139,26 @@ Vue.component('notes', {
                 this.tasks.splice(index, 1);
             } else {
                 alert('Минимум 3 задачи!');
+            }
+        },
+        checkProgress(note) {
+            let done = 0;
+            for (let i = 0; i < note.tasks.length; i++) {
+                if (note.tasks[i].completed) {
+                    done++;
+                }
+            }
+
+            let total = note.tasks.length;
+            let percent = done / total;
+
+            if (note.status === 'new' && percent > 0.5) {
+                note.status = 'progress';
+            }
+
+            if (percent === 1) {
+                note.status = 'completed';
+                note.completedDate = new Date().toLocaleString();
             }
         }
     }
