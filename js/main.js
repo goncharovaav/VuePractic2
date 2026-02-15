@@ -24,17 +24,23 @@ Vue.component('notes', {
             <button type="submit" :disabled="newNotes.length >= 3" class="add-note-button">
                 {{ newNotes.length >= 3 ? 'Первый столбец заполнен' : 'Добавить заметку' }}
             </button>
-            <p v-if="newNotes.length >= 3" class="error-message">В первом столбце уже 3 заметки.</p>
+            <p v-if="newNotes.length >= 3" class="error-message">В первом столбце уже 3 заметки. Дождитесь их перемещения.</p>
         </form>
         
         <div class="columns">
-            <div class="column">
+            <div class="column" :class="{ 'column-disabled': disableFirstColumn }">
                 <h2 class="column-title">Новые</h2>
                 <div v-for="note in newNotes" :key="note.id" class="note-tasks">
                     <h3 class="note-title">{{note.title}}</h3>
                     <ul class="note-list">
                         <li v-for="(task, index) in note.tasks" :key="index" class="note-task">
-                            <input type="checkbox" v-model="task.completed" @change="checkProgress(note)" class="task-checkbox">
+                            <input 
+                                type="checkbox" 
+                                v-model="task.completed" 
+                                @change="checkProgress(note)" 
+                                :disabled="disableFirstColumn"
+                                class="task-checkbox"
+                            >
                             <span :class="{ 'task-completed': task.completed }">{{task.text}}</span>
                         </li>
                     </ul>
@@ -72,7 +78,8 @@ Vue.component('notes', {
         return {
             title: '',
             tasks: ['', '', ''],
-            notes: []
+            notes: [],
+            disableFirstColumn: false,
         }
     },
     computed: {
@@ -134,6 +141,8 @@ Vue.component('notes', {
 
             this.title = '';
             this.tasks = ['', '', ''];
+
+            this.saveData();
         },
         addTask() {
             if (this.tasks.length < 5) {
@@ -167,10 +176,12 @@ Vue.component('notes', {
                 }
             }
 
-            if (note.status === 'new' && percent > 0.5) {
+            if (note.status === 'new' && percent >= 0.5) {
                 if (inProgressCount < 5) {
                     note.status = 'progress';
+                    this.disableFirstColumn = false;
                 } else {
+                    this.disableFirstColumn = true;
                     alert('Второй столбец заполнен!');
                 }
             }
@@ -178,7 +189,19 @@ Vue.component('notes', {
             if (percent === 1) {
                 note.status = 'completed';
                 note.completedDate = new Date().toLocaleString();
+                this.disableFirstColumn = false;
             }
+
+            this.saveData();
+        },
+        saveData() {
+            localStorage.setItem('notes', JSON.stringify(this.notes));
+        }
+    },
+    mounted() {
+        let saved = localStorage.getItem('notes');
+        if (saved) {
+            this.notes = JSON.parse(saved);
         }
     }
 })

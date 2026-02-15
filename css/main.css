@@ -156,6 +156,10 @@
     text-align: right;
     font-style: italic;
 }
+.column-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
 .max-tasks-message {
     color: #ff8800;
     font-size: 14px;
