@@ -180,3 +180,56 @@
     margin-top: 10px;
     text-align: center;
 }
+.deadline-section {
+    width: 100%;
+    margin: 15px 0;
+}
+
+.deadline-section label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.deadline-input {
+    width: 40;
+    padding: 10px;
+    border: 1px solid #c6c6c6;
+    border-radius: 5px;
+    box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+}
+
+.note-deadline {
+    background: #e3f2fd;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #1976d2;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.overdue-label {
+    background: #ff4444;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 8px;
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.note-overdue {
+    border-left: 5px solid #ff4444 !important;
+    background-color: rgba(255, 68, 68, 0.1) !important;
+}
+
+.note-overdue .note-deadline {
+    background: #ffebee;
+    color: #c62828;
+}
